@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core">
+
+<f:view contentType="text/html" id="fview">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Page template with PrimeFaces</title>
+    <ui:debug />
+    <f:metadata>
+        <ui:insert name="metadata" />
+    </f:metadata>
+    <h:head>
+     <script src="https://www.chartjs.org/dist/2.9.3/Chart.min.js"></script>
+	<script src="https://www.chartjs.org/samples/latest/utils.js"></script>
+    </h:head>
+    <div style="width:75%;">
+    <canvas id="canvas"/>
+	</div>
+	
+	 <h:form id="formOne">
+	 
+         <h3>Read-Only input text box</h3>
+         <p:inputNumber update="canvas" prependId="false" id="inputOne" value = "5"/>
+         <h3>Read-Only input text box</h3>
+         <h:inputText value = "Hello World"/>
+      </h:form>
+    <h:body onload="statusDialog.hide();">
+    <script type="text/javascript">
+    window.onload = function() {
+		var ctx = document.getElementById('canvas').getContext('2d');
+		var inputOne = document.getElementById('formOne:inputOne_hinput').value; 
+		var lineChart = new Chart(ctx, {
+			type:'line',
+			data: {
+				labels:["Jan","Feb","Mar"],
+				datasets: [
+					{
+						label: "2015",
+						data:[10,inputOne,12]
+					}
+				]
+			}
+		})
+		window.myLine = lineChart;
+	};
+	
+
+	</script> 
+    </h:body>
+
+</f:view>
+</html>
