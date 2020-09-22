@@ -18,33 +18,98 @@
      <script src="https://www.chartjs.org/dist/2.9.3/Chart.min.js"></script>
 	<script src="https://www.chartjs.org/samples/latest/utils.js"></script>
     </h:head>
-    <div style="width:75%;">
+    <h:column>
+    <div style="width:50%;">
     <canvas id="canvas"/>
 	</div>
-	
+	</h:column>
+	<h:column>
 	 <h:form id="formOne">
-	 
-         <h3>Read-Only input text box</h3>
-         <p:inputNumber update="canvas" prependId="false" id="inputOne" value = "5"/>
-         <h3>Read-Only input text box</h3>
-         <h:inputText value = "Hello World"/>
+	 	<h:inputHidden id="jsonData" value = "#{calcBean.dataArray}"></h:inputHidden>
+	 	<h:inputHidden id="jsonData2" value = "#{calcBean.dataArray2}"></h:inputHidden>
+	 	<h:inputHidden id="labelData" value = "#{calcBean.labelArray}"></h:inputHidden>
+	 	<h3>Present Value</h3>
+         <p:inputNumber update="jsonData" prependId="false" symbol="$" symbolPosition="p" id="inputTwo" value ="#{calcBean.pv}" onchange="updateChart();"/>
+         <h3>Rate (Annual Return)</h3>
+         <p:inputNumber update="jsonData" prependId="false" id="inputOne" value ="#{calcBean.rate}" onchange="updateChart();"/>
+        <h:panelGrid columns="1" style="margin-bottom: 10px">
+        <h3>Rate (Annual Return)</h3>
+        <h:outputText id="output" value="#{calcBean.nper} years" />
+        <h:inputHidden id="inputThree" value="#{calcBean.nper}" />
+        <p:slider for="inputThree" display="output" style="width: 200px" displayTemplate="Set number of years: {value}" minValue="5" maxValue="25" onSlideEnd="updateChart();" />
+    </h:panelGrid>
+         
+         <p:commandButton id="updateButton" update="formOne" style="visibility: hidden;" value="Submit" type="submit" process="inputOne inputTwo inputThree" oncomplete="doChart();">
+          </p:commandButton>
       </h:form>
+     </h:column>
     <h:body onload="statusDialog.hide();">
     <script type="text/javascript">
-    window.onload = function() {
+    
+    window.onload = doChart();
+    	function updateChart(){
+    		var a = document.getElementById('formOne:updateButton').click();
+    		
+    	}
+    	function doChart() {
+    		if (window.myLine !== undefined) {
+    		    while (window.myLine.data.datasets.length > 0) {
+    		    	window.myLine.data.datasets.pop();
+    		    }
+    		  }
+    	var lineChart = null;
+   		document.getElementById('formOne:updateButton');
+    	var jsonData = null;
 		var ctx = document.getElementById('canvas').getContext('2d');
-		var inputOne = document.getElementById('formOne:inputOne_hinput').value; 
-		var lineChart = new Chart(ctx, {
+		var labelData = document.getElementById('formOne:labelData').value; 
+		var labelArray = JSON.parse(labelData);
+		var jsonData = document.getElementById('formOne:jsonData').value;
+		var jsonArray = JSON.parse(document.getElementById('formOne:jsonData').value);
+		var jsonData2 = document.getElementById('formOne:jsonData2').value;
+		var jsonArray2 = JSON.parse(document.getElementById('formOne:jsonData2').value);
+		lineChart = new Chart(ctx, {
 			type:'line',
 			data: {
-				labels:["Jan","Feb","Mar"],
+				labels:labelArray,
 				datasets: [
 					{
-						label: "2015",
-						data:[10,inputOne,12]
+						label: "With Investments",
+						data:jsonArray,
+						backgroundColor: "blue",
+				        borderColor: "lightblue",
+				        fill: true,
+				        lineTension: 0,
+				        radius: 5
+					},
+					{
+						label: "In Savings",
+						data:jsonArray2,
+						backgroundColor: "green",
+				        borderColor: "lightgreen",
+				        fill: true,
+				        lineTension: 0,
+				        radius: 5
 					}
 				]
-			}
+			},
+			options: {
+				    responsive: true,
+				    title: {
+				      display: true,
+				      position: "top",
+				      text: "Future Value Graph",
+				      fontSize: 18,
+				      fontColor: "#111"
+				    },
+				    legend: {
+				      display: true,
+				      position: "bottom",
+				      labels: {
+				        fontColor: "#333",
+				        fontSize: 16
+				      }
+				    }
+				  }
 		})
 		window.myLine = lineChart;
 	};
